@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fundraise Up Demo</title>
     
-    <!-- Подключение Google Analytics -->
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-B48YE1WDMM"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-    
       gtag('config', 'G-B48YE1WDMM');
     </script>
 
-
-    <!-- Подключение Fundraise Up -->
+    <!-- Fundraise Up -->
     <script>(function(w,d,s,n,a){if(!w[n]){var l='call,catch,on,once,set,then,track'
     .split(','),i,o=function(n){return'function'==typeof n?o.l.push([arguments])&&o
     :function(){return o.l.push([n,arguments])&&o}},t=d.getElementsByTagName(s)[0],
@@ -29,19 +27,39 @@
 
     <h1>Демо интеграции Fundraise Up с Google Analytics</h1>
 
-    <!-- Кнопка для открытия чекаута -->
-    <a href="#XJKDHSTQ" style="display: none"></a>
+    <!-- Visible link to open checkout -->
+    <a id="donateLink" href="#" style="display: inline-block; padding: 10px 20px; background-color: green; color: white; text-decoration: none; border-radius: 5px; cursor: pointer;">
+        Пожертвовать (тест)
+    </a>
 
     <script>
-        document.getElementById('donateButton').addEventListener('click', function() {
+        // Handling click event on the <a> tag
+        document.getElementById('donateLink').addEventListener('click', function(event) {
+            event.preventDefault();  // Prevent default link action
+            
+            console.log("Opening checkout in test mode...");
+            
+            // Google Analytics event when opening checkout
             gtag('event', 'checkout_open', {
                 'event_category': 'donation',
                 'event_label': 'FundraiseUp'
             });
+
+            // Open Fundraise Up checkout in test mode
+            if (typeof FundraiseUp !== 'undefined') {
+                FundraiseUp.checkout({ test: true }).catch(error => {
+                    console.error("Error opening checkout:", error);
+                });
+            } else {
+                console.error("FundraiseUp script not loaded.");
+            }
         });
 
+        // Track completed donations
         FundraiseUp.on('checkout', function(checkout) {
             checkout.on('complete', function(donation) {
+                console.log("Donation completed:", donation);
+
                 gtag('event', 'purchase', {
                     'event_category': 'donation',
                     'event_label': 'FundraiseUp',
