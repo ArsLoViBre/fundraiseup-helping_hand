@@ -27,32 +27,19 @@
 
     <h1>Демо интеграции Fundraise Up с Google Analytics</h1>
 
-    <!-- Кнопка для тестового пожертвования -->
+    <!-- Кнопка для открытия чекаута -->
     <a href="#XJKDHSTQ" style="display: none"></a>
 
     <script>
         document.getElementById('donateButton').addEventListener('click', function() {
-            console.log("Кнопка нажата, открываем чекаут...");
-
-            // Проверяем, загружен ли Fundraise Up
-            if (typeof FundraiseUp !== 'undefined') {
-                gtag('event', 'checkout_open', {
-                    'event_category': 'donation',
-                    'event_label': 'FundraiseUp'
-                });
-
-                // Открываем чекаут в тестовом режиме
-                FundraiseUp.checkout({ test: true });
-            } else {
-                console.error("Ошибка: FundraiseUp не загружен.");
-            }
+            gtag('event', 'checkout_open', {
+                'event_category': 'donation',
+                'event_label': 'FundraiseUp'
+            });
         });
 
-        // Отслеживаем успешное пожертвование
         FundraiseUp.on('checkout', function(checkout) {
             checkout.on('complete', function(donation) {
-                console.log("Пожертвование завершено:", donation);
-
                 gtag('event', 'purchase', {
                     'event_category': 'donation',
                     'event_label': 'FundraiseUp',
