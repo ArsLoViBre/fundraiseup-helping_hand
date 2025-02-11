@@ -28,30 +28,32 @@
     <h1>Демо интеграции Fundraise Up с Google Analytics</h1>
 
     <!-- Кнопка для тестового пожертвования -->
-    <button id="donateButton" style="padding: 10px 20px; background-color: green; color: white; text-decoration: none; border-radius: 5px; border: none; cursor: pointer;">
+    <button id="donateButton" style="padding: 10px 20px; background-color: green; color: white; border: none; cursor: pointer;">
         Пожертвовать (тест)
     </button>
 
     <script>
         document.getElementById('donateButton').addEventListener('click', function() {
-            console.log("Кнопка нажата, открываем чекаут в тестовом режиме...");
-            
-            // Отправляем событие в GA4
-            gtag('event', 'checkout_open', {
-                'event_category': 'donation',
-                'event_label': 'FundraiseUp'
-            });
+            console.log("Кнопка нажата, открываем чекаут...");
 
-            // Открываем чекаут с включенным тестовым режимом
-            FundraiseUp.checkout({ test: true }).catch(error => {
-                console.error("Ошибка открытия чекаута:", error);
-            });
+            // Проверяем, загружен ли Fundraise Up
+            if (typeof FundraiseUp !== 'undefined') {
+                gtag('event', 'checkout_open', {
+                    'event_category': 'donation',
+                    'event_label': 'FundraiseUp'
+                });
+
+                // Открываем чекаут в тестовом режиме
+                FundraiseUp.checkout({ test: true });
+            } else {
+                console.error("Ошибка: FundraiseUp не загружен.");
+            }
         });
 
-        // Фиксируем успешное завершение пожертвования в GA4
+        // Отслеживаем успешное пожертвование
         FundraiseUp.on('checkout', function(checkout) {
             checkout.on('complete', function(donation) {
-                console.log("Пожертвование завершено, отправляем данные в GA4:", donation);
+                console.log("Пожертвование завершено:", donation);
 
                 gtag('event', 'purchase', {
                     'event_category': 'donation',
